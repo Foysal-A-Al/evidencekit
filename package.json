@@ -1,0 +1,12 @@
+{
+  "name": "evidencekit-workbench",
+  "version": "0.2.0",
+  "description": "Local repository evidence workbench and native coding-agent skills",
+  "license": "MIT",
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "bin": {"evidencekit": "bin/evidencekit.mjs"},
+  "scripts": {"start": "node bin/evidencekit.mjs", "test": "node --test tests/*.test.mjs"},
+  "files": ["bin/", "web/", "skills/", "README.md", "SECURITY.md", "LICENSE"],
+  "repository": {"type":"git","url":"https://github.com/Foysal-A-Al/evidencekit.git"}
+}

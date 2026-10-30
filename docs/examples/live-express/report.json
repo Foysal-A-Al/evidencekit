@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "summary": "Built-in source review: 32 files inspected. Specific code signals are listed below; goal completion and runtime behavior remain unverified.",
+  "findings": [
+    {
+      "id": "F1",
+      "title": "Goal coverage still needs confirmation",
+      "kind": "missing",
+      "status": "BLOCKED",
+      "detail": "Built-in checks cannot establish every feature required by your goal. Compare the stated goal with the inspected files before claiming a feature is missing. The prompt carries this requirement explicitly.",
+      "refs": [],
+      "acceptance": [
+        "Map each requirement in the developer goal to implementation and tests.",
+        "Separate confirmed missing behavior from proposed improvements and unknown coverage."
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "Live runtime and deployment are unverified",
+      "kind": "unknown",
+      "status": "BLOCKED",
+      "detail": "This review fetched source only. No process, port, HTTP behavior, test suite, dependency audit or running model was executed.",
+      "refs": [],
+      "acceptance": [
+        "Identify the intended runtime/build before testing deployed behavior.",
+        "Run the project’s existing tests in an authorized environment and report actual results."
+      ]
+    },
+    {
+      "id": "F3",
+      "title": "Source coverage is limited",
+      "kind": "unknown",
+      "status": "BLOCKED",
+      "detail": "File, byte, tree or entry limits omitted source context. An absence in this snapshot is not proof of absence from the repository.",
+      "refs": [],
+      "acceptance": [
+        "Inspect additional relevant files before broad conclusions."
+      ]
+    }
+  ],
+  "target": "https://github.com/expressjs/express",
+  "revision": "1c6f1b0fe4000977b9a7b4f34097e4d527dd9824",
+  "scope": "",
+  "goal": "Understand project readiness and identify source-supported repair work without changing its public API.",
+  "mode": "repair",
+  "provenance": "built-in source checks — no AI model or local CLI",
+  "coverage": {
+    "files": [
+      {
+        "path": "examples/README.md",
+        "sha256": "93d778625ad19379ca60d8534a2aaa72bb6c808310539def136a2e50fa7ca379"
+      },
+      {
+        "path": "package.json",
+        "sha256": "9645053f08f43135ec21f46ae434e49e10528c9062fde7776b150f38a2335afe"
+      },
+      {
+        "path": "Readme.md",
+        "sha256": "3cf5f3e224dbb9b5e2bc0ac255871de453762ae7a277f868da5f4a69d6ff2509"
+      },
+      {
+        "path": "examples/content-negotiation/db.js",
+        "sha256": "508014d6735d509d7943753343b8351a989df0dd56dda025257da686d23a0175"
+      },
+      {
+        "path": "examples/content-negotiation/index.js",
+        "sha256": "fadf6827e28bcb0271c03bb8059a67d2dca3d051f4243f6bd507ee036612a3b7"
+      },
+      {
+        "path": "examples/content-negotiation/users.js",
+        "sha256": "9943db10754f61f8cee9488649e73b9a244a7f940ff0c3596af97924bcfcd234"
+      },
+      {
+        "path": "examples/cookies/index.js",
+        "sha256": "d91ed906721c1ad0ee2743ea9fcdd41c37bbf07f1474b6970841cc0254f8a160"
+      },
+      {
+        "path": "examples/downloads/files/amazing.txt",
+        "sha256": "008329dc26b4a1bed52a3ae6864947d90eaa5c3cdb73a9dae0b9a1f64af527c4"
+      },
+      {
+        "path": "examples/downloads/files/CCTV大赛上海分赛区.txt",
+        "sha256": "f0224baa69097002466e024456202293d3b5cc146cb009645d0a1a8525c191ee"
+      },
+      {
+        "path": "examples/downloads/files/notes/groceries.txt",
+        "sha256": "f3d71f2f0040f2e66c9ff22387a16b7703aa2b4ce2cd2f6d062f68c33f3f4c9a"
+      },
+      {
+        "path": "examples/downloads/index.js",
+        "sha256": "0b826b327815c7deacc109b1445a9ec7ea06b4e3ea9ed5dce7af3b0f108714d0"
+      },
+      {
+        "path": "examples/ejs/index.js",
+        "sha256": "48d2ca08efdcfb2a5917de7ce2299a2f223ea67855d09cf7e67c5b87cc8ec371"
+      },
+      {
+        "path": "examples/ejs/public/stylesheets/style.css",
+        "sha256": "105685877b897fba265ed5207644f0071cae40698aae4234f91e838632d61e27"
+      },
+      {
+        "path": "examples/ejs/views/footer.html",
+        "sha256": "02ed54edc42fbbbc36988b2a184b67e49568be4807832538ba9b7edda53744d8"
+      },
+      {
+        "path": "examples/ejs/views/header.html",
+        "sha256": "3f7a9352cece6bdf0565c75ed915254fcccdcd10fe3cc0e7571f87805f45bb94"
+      },
+      {
+        "path": "examples/ejs/views/users.html",
+        "sha256": "29c08228d1a70338505b44bda11fc5e75f4d4275bc85568f1f661effacfe5be6"
+      },
+      {
+        "path": "examples/error-pages/index.js",
+        "sha256": "af04ae3ba25a70070f350c08a154086da232afe2a68a4bb1f5229d37d059e674"
+      },
+      {
+        "path": "examples/error/index.js",
+        "sha256": "a82e4d69a686e9ebc5802d45a6491d7365d5f79185d82ddf871489cfdb56fbdb"
+      },
+      {
+        "path": "examples/hello-world/index.js",
+        "sha256": "ab0bb8d99209070fa5ad9f6f37a05730bbf6388ff512954d251d30eff4946686"
+      },
+      {
+        "path": "examples/markdown/index.js",
+        "sha256": "3a2005b5bc1ea0393783c1a97da58dc81c751e0f5a6dc301cc84ba0c061500ff"
+      },
+      {
+        "path": "examples/markdown/views/index.md",
+        "sha256": "74a23379873fbf3e8f223cc3cc491c0ed25b6f65d221f7dc0674ce7c9eb4b984"
+      },
+      {
+        "path": "examples/multi-router/controllers/api_v1.js",
+        "sha256": "7220ce1de1ad06db1879030a1037f201dbc0d4c4ce58bd47273acd50b7480abe"
+      },
+      {
+        "path": "examples/multi-router/controllers/api_v2.js",
+        "sha256": "0bc369adc101e2e301406a7860cff8059a1025adc85d05ee2a160e468af136bb"
+      },
+      {
+        "path": "examples/multi-router/index.js",
+        "sha256": "2dd63ace2545575c3349d61b6c2660c46336de29290b5d20da0088f30a67cb55"
+      },
+      {
+        "path": "examples/mvc/controllers/main/index.js",
+        "sha256": "f63daa739fe403d291c501a410d8dc8a123e47da575739fe74a71cc17c3839c7"
+      },
+      {
+        "path": "examples/mvc/controllers/pet/index.js",
+        "sha256": "f4798e50906220321f0a0d7a0c97532802903c1089b4dba8228ec4e0364d177c"
+      },
+      {
+        "path": "examples/mvc/controllers/user-pet/index.js",
+        "sha256": "397ff04667f5c7e564b1e6a55e5e9245761051565afa2f869bb6560deb2fd125"
+      },
+      {
+        "path": "examples/mvc/controllers/user/index.js",
+        "sha256": "462e5a7457f7f73673adef1e878eb87ec66d8baf6f9fde9785264bb81a36e2ba"
+      },
+      {
+        "path": "examples/mvc/db.js",
+        "sha256": "7b8c2e632192310a3bdee3cc22238bfc41d6fea7d7195d2e8a3fb0e9d891ab12"
+      },
+      {
+        "path": "examples/mvc/lib/boot.js",
+        "sha256": "fd7eb252663f1c365606b180aad645b9b65632070d1f07824e3fca22640bd068"
+      },
+      {
+        "path": "examples/mvc/public/style.css",
+        "sha256": "3c784a798fc34c58bfc3148d886670ddc70588240f0cedf32bf78fa2d96257e0"
+      },
+      {
+        "path": "examples/online/index.js",
+        "sha256": "2e952f14143390d6cc41055a8fe0852b275fa36fecacb02adb03e151795735b1"
+      }
+    ],
+    "excluded": 29,
+    "truncated": true
+  },
+  "method": "Source inspection only. No runtime, deployment or security certification.",
+  "collectedAt": "2026-10-30T13:22:00.575Z"
+}

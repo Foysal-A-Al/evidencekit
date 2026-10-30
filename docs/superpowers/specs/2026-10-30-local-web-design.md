@@ -35,3 +35,6 @@ The core UI must support copying an audit request into an existing agent and imp
 Test the real server plus UI: valid/invalid sources, missing goal/CLI, source exclusions and path escapes, malicious source/model strings, unauthorized cross-origin requests, cancellation/timeouts, report validation and selective prompt generation. Verify clipboard success/fallback and downloads in browser QA. Run the existing four-skill installer test after packaging changes. Record OS and actual native CLI coverage; do not claim every-PC compatibility. Native Windows verification requires device access, currently unavailable.
 
 Deliver updated GitHub source, a documented one-command local launcher, usage and security notes, and retained verification. Keep the earlier Python toolkit optional and separate. No paid services or background updates.
+
+## Superseding user direction during implementation
+The user requested a direct public-repository scan with no local coding CLI. The delivered main flow is therefore a hosted static browser workbench with built-in source checks, optional imported agent review and deterministic prompt handoff. No filesystem reader or automatic local CLI adapter is shipped. Local skill-based audits remain separate. Full AI semantic analysis is not claimed by the built-in checks.
