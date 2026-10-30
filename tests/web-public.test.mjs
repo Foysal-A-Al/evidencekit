@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {scanSource,collectGithub,makePrompt,validateReport,parseRepo} from '../web/public/core.js';
 test('public scan detects source flags without claiming runtime or inventing goal completion',()=>{
  const snapshot={target:'fixture',revision:'abc',files:[{path:'package.json',content:'{"scripts":{"start":"node app.js"}}',sha256:'a'},{path:'app.js',content:'const x=eval(input);\nprocess.env.NODE_TLS_REJECT_UNAUTHORIZED="0";',sha256:'b'}],bytes:100,excluded:0,truncated:false,treeFiles:['package.json','app.js']};
- const report=scanSource(snapshot,{goal:'Add authentication',mode:'repair'});assert.ok(report.findings.some(f=>/dynamic/i.test(f.title)));assert.ok(report.findings.some(f=>/TLS/i.test(f.title)));assert.ok(report.findings.some(f=>f.kind==='missing'&&f.status==='BLOCKED'));assert.match(report.method,/No runtime/);
+ const report=scanSource(snapshot,{goal:'Add authentication',mode:'repair'});assert.ok(report.findings.some(f=>/dynamic/i.test(f.title)));assert.ok(report.findings.some(f=>/TLS/i.test(f.title)));assert.ok(report.limitations.some(v=>/Goal completeness/.test(v)));assert.match(report.method,/No runtime/);
  const chosen=report.findings.filter(f=>/TLS/i.test(f.title)).map(f=>f.id);const prompt=makePrompt(report,chosen);assert.match(prompt,/TLS/);assert.doesNotMatch(prompt,/Dynamic code/);
 });
 test('unknown report references are removed and not promoted to verified',()=>{
@@ -20,4 +20,7 @@ test('remaining context budget is reported as limited and explicit slash refs re
   return Response.json({message:'not found'},{status:404});
  };
  try{const s=await collectGithub('https://github.com/owner/repo/tree/feature/login/src',undefined,{ref:'feature/login'});assert.equal(s.files.length,5);assert.equal(s.bytes,235000);assert.equal(s.truncated,true);assert.equal(s.scope,'src');assert.equal(s.revision,sha);}finally{globalThis.fetch=original;}
+});
+test('lexical web settings are suspected even when text looks executable',()=>{
+ const r=scanSource({target:'lexical',files:[{path:'app.py',content:'# app.run(debug=True)\n# process.env.NODE_TLS_REJECT_UNAUTHORIZED="0";',sha256:'h'}]},{goal:'Find problems'});assert.ok(r.findings.every(f=>f.status!=='VERIFIED'));
 });

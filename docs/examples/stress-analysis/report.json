@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "summary": "Source review found 5 specific signal(s) in 4 inspected files. Confirm suspected findings and historical scope before repair.",
+  "findings": [
+    {
+      "id": "F1",
+      "title": "Permutation importance reuses fit inputs",
+      "kind": "problem",
+      "status": "SUSPECTED",
+      "detail": "Notebook cell 39. The same identifiers (rf, X, y) appear in fit and later permutation importance. This can describe training-set importance rather than held-out generalization; reassignment and exploratory intent must be checked. Source review only; confirm data flow and whether this is an archived artifact before changing it.",
+      "refs": [
+        "Stress_analysis.ipynb"
+      ],
+      "acceptance": [
+        "Trace the model and dataset identities between fit and importance.",
+        "If generalization importance is intended, evaluate on untouched validation data; label training-set exploratory results accurately."
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "Cross-validation inherits a feature-loop binding",
+      "kind": "problem",
+      "status": "SUSPECTED",
+      "detail": "Notebook cell 29. A feature loop assigns X from df[features], and a later out-of-loop cross-validation call reuses it. If it was not reassigned, the final loop's feature group is evaluated rather than every predictor. Source review only; confirm data flow and whether this is an archived artifact before changing it.",
+      "refs": [
+        "Stress_analysis.ipynb"
+      ],
+      "acceptance": [
+        "Make the intended validation feature matrix explicit.",
+        "Compare its column names with the documented predictor set and label subset results separately."
+      ]
+    },
+    {
+      "id": "F3",
+      "title": "Repeated plot output filename",
+      "kind": "problem",
+      "status": "SUSPECTED",
+      "detail": "Notebook cell 8. Multiple savefig-like patterns reference the same literal output path: bar_chart_300dpi.png (3 calls). If these are executable calls, sequential execution can replace earlier figures. Comments/strings can also match; no file writes were run. Source review only; confirm data flow and whether this is an archived artifact before changing it.",
+      "refs": [
+        "Stress_analysis.ipynb"
+      ],
+      "acceptance": [
+        "Assign distinct figure filenames in the working analysis.",
+        "Preserve historical notebook/results; verify that intended figure exports coexist."
+      ]
+    },
+    {
+      "id": "F4",
+      "title": "Kaggle-specific dataset path needs review",
+      "kind": "problem",
+      "status": "SUSPECTED",
+      "detail": "Notebook cell 5. A read-data pattern refers to /kaggle/input; confirm it is executable rather than a comment/string. A different environment needs that path or an explicit local-data entry point; check whether the project already documents a maintained alternative. Source review only; confirm data flow and whether this is an archived artifact before changing it.",
+      "refs": [
+        "Stress_analysis.ipynb"
+      ],
+      "acceptance": [
+        "Use the documented local audit entry point when available.",
+        "Keep archived notebooks intact; parameterize paths only in an authorized working copy."
+      ]
+    },
+    {
+      "id": "F5",
+      "title": "Percentage formula sums an unverified raw score",
+      "kind": "problem",
+      "status": "SUSPECTED",
+      "detail": "Notebook cell 10. The code computes sum(score)/number_of_students*100 for depression, safety, bullying. That is a prevalence percentage only for a correctly defined binary indicator. Later corrected cells or an external codebook may resolve this; do not call all recorded outputs wrong without tracing use. Source review only; confirm data flow and whether this is an archived artifact before changing it.",
+      "refs": [
+        "Stress_analysis.ipynb"
+      ],
+      "acceptance": [
+        "Verify each variable encoding and the intended denominator.",
+        "Use a documented indicator/count for prevalence, and distinguish archived calculations from corrected outputs."
+      ]
+    }
+  ],
+  "target": "https://github.com/Foysal-A-Al/Stress-analysis",
+  "revision": "9c0b3b4facff87deb7c15f64ec67bb161d6940c4",
+  "scope": "",
+  "goal": "Find the problems; distinguish historical notebook concerns from the maintained analysis.py audit.",
+  "mode": "repair",
+  "provenance": "built-in source checks — no AI model or local CLI",
+  "coverage": {
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "d57704ff9ff79f672e8dfb77cf2204387c40c90668aacd85878b82b7d6b75a37",
+        "representation": "source text"
+      },
+      {
+        "path": "requirements.txt",
+        "sha256": "c946f55702eb7f7743c1cd28041a176488aa9bcf9b90b91a193edf8c2aef32ab",
+        "representation": "source text"
+      },
+      {
+        "path": "analysis.py",
+        "sha256": "d11f556602b1b4ef1378ca79ba1dab04c9ebdfd7e5125af5b3e92e7095e8b28f",
+        "representation": "source text"
+      },
+      {
+        "path": "Stress_analysis.ipynb",
+        "sha256": "dd88e59fa6febbff9af9cc64c3ed9a1e3f7e789d5c43c2f23e6a1138490fb8ec",
+        "representation": "notebook code cells only",
+        "rawSha256": "d14c31174c06a86583aaf0ed093ae8b2b2a301825193fbec548f8336d5815bbf"
+      }
+    ],
+    "excluded": 4,
+    "truncated": false
+  },
+  "method": "Source inspection only. No runtime, deployment or security certification.",
+  "collectedAt": "2026-10-30T13:43:17.856Z",
+  "assessment": "SOURCE_SIGNALS",
+  "limitations": [
+    "Goal completeness requires project-specific reasoning; it was not established by these rules.",
+    "No runtime, deployment, training or test-suite execution was performed."
+  ]
+}

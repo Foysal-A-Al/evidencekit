@@ -11,3 +11,15 @@ Initial independent review found unsafe local filesystem races, incomplete subpr
 Hosting deployment was verified through the native service. A cloud browser could not reach the executor loopback preview; the deployed owner-private Site shows a ChatGPT sign-in gate in the unsigned browser. Full interactive browser QA, clipboard/download behavior and native Windows launcher execution remain unverified. Modern browsers with Web Crypto, module scripts, streaming fetch, AbortSignal.any and AbortSignal.timeout are required. No all-PC compatibility guarantee.
 
 A generated interface preview is conceptual and not screenshot evidence. Deep AI feature completeness and live runtime diagnosis require additional authorized evidence/workflow; the hosted source checks do not claim either.
+
+## v0.2.1 — user-reported inconclusive Stress-analysis result
+
+Reproduced root cause: .ipynb was excluded and the 48 KB reader skipped the 932,941-byte notebook; the narrow web rules returned three generic limitations as selected repair findings.
+
+Notebook code cells are now parsed from JSON under a 2 MB raw input bound, 5,000-cell bound and 48 KB code-context bound. Outputs/metadata are excluded, code is not executed, and both source-representation and original-notebook hashes are retained. Extension checks are case-insensitive. Code-cell separators count toward the byte limit.
+
+Live rescan of Foysal-A-Al/Stress-analysis at 9c0b3b4facff87deb7c15f64ec67bb161d6940c4 collected README, requirements, analysis.py and 17,903 characters of notebook code. Five lexical source signals were found in the notebook: same fit/permutation inputs, cross-validation after a feature-loop binding, repeated figure path, Kaggle-specific read path, and raw-score percentage formulas. All are SUSPECTED pending contextual verification; README identifies the notebook as historical and the maintained audit remains separate. No dataset rows, training, dependency install or Stress-analysis source changes were used. See examples/stress-analysis/ for the actual report/prompt.
+
+Generic limits are displayed separately. An empty scan is INCONCLUSIVE and cannot generate a generic repair prompt. Suspected findings require source references. Lexical matches can occur in comments/strings, so they are not promoted to verified execution. Regression tests cover output omission, mixed-case extensions, byte limits, held-out negative cases, inconclusive reports and serving the notebook module. Independent review found and verified the mixed-case output exposure and inert-text claim issues; both received failing regression tests before fixes.
+
+This remains a bounded rule-based source checker. These corrections do not make it a general AI project auditor or prove all bugs/missing features have been identified.
