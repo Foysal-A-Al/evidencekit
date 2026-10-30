@@ -1,0 +1,14 @@
+interface:
+  display_name: EvidenceKit
+  short_description: Audit projects and build grounded coding prompts
+  default_prompt: Use $evidencekit to inspect this project with existing tools and
+    produce a grounded repair or rebuild prompt.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

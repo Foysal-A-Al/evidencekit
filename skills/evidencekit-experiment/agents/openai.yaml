@@ -1,0 +1,14 @@
+interface:
+  display_name: EvidenceKit Experiment
+  short_description: Review experiment evidence and generate repair prompts
+  default_prompt: Use $evidencekit-experiment to audit this experiment with existing
+    project tools and produce a grounded repair prompt.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

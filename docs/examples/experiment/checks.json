@@ -1,0 +1,28 @@
+{
+  "collected_at": "2026-10-30T12:32:52.594147+00:00",
+  "method": "Python standard library; hand-checked fixtures passed before analysis; exact unmodified CSV strings; SHA-256 of the byte snapshots parsed; reread equality passed",
+  "metrics": {
+    "row_counts": {
+      "train": 2,
+      "test": 2,
+      "predictions": 2
+    },
+    "exact_full_row_overlap": 0,
+    "train_test_id_overlap": 1,
+    "train_test_subject_overlap": 1,
+    "train_precedes_test": false,
+    "test_rows_not_after_all_training": 1,
+    "prediction_ids_match_test": true,
+    "duplicate_prediction_ids": 0,
+    "accuracy": 0.5,
+    "correct_predictions": 1,
+    "positive_label_in_truth": true,
+    "positive_label_in_prediction": true
+  },
+  "sha256": {
+    "README.md": "a08094b77650274858ce24babccb258175b297f22738c02db31e20e86940e7e5",
+    "train.csv": "dc80664ff13d541f6699bee4ac3bf1f6dc2de01f4a0cae190fb8c57c95168eba",
+    "test.csv": "56a9ac8ef3fe030621f344d87b42aa7b9aace4684bb316c9649250ef9a8c55cb",
+    "predictions.csv": "1ad77af30d867aa3d053109bc4b4f8da5c86106a9f2ceda016b3ae551be8930b"
+  }
+}

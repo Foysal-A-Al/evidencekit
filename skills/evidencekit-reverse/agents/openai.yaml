@@ -1,0 +1,14 @@
+interface:
+  display_name: EvidenceKit Reverse
+  short_description: Turn repository evidence into a synthetic rebuild prompt
+  default_prompt: Use $evidencekit-reverse to inspect this repository and create an
+    evidence-grounded synthetic rebuild prompt.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

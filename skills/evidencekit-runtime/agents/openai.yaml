@@ -1,0 +1,14 @@
+interface:
+  display_name: EvidenceKit Runtime Doctor
+  short_description: Inspect running apps using existing agent tools
+  default_prompt: Use $evidencekit-runtime to inspect my running app and create an
+    evidence-grounded repair prompt without installing an audit stack.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
