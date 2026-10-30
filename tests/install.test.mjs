@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join,resolve,dirname,delimiter} from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-const run=promisify(execFile),source=resolve('.');
+const run=promisify(execFile),source=process.env.EVIDENCEKIT_INSTALL_SOURCE??resolve('.'),localSource=resolve('.');
 async function npxCli(){
  const directories=[dirname(process.execPath),...(process.env.PATH??'').split(delimiter)];
  for(const directory of directories){
@@ -48,7 +48,7 @@ test('real skills installer discovers four skills, copies both hosts, preserves 
    assert.equal((await lstat(directory)).isSymbolicLink(),false,'Copy mode must not need symlink privilege');
    const body=await readFile(join(directory,'SKILL.md'),'utf8');
    assert.match(body,new RegExp(`^name: ${name}$`,'m'));
-   const original=join(source,'skills',name),expectedFiles=await files(original);
+   const original=join(localSource,'skills',name),expectedFiles=await files(original);
    assert.deepEqual(await files(directory),expectedFiles,'All skill resources must be copied');
    for(const file of expectedFiles)assert.deepEqual(await readFile(join(directory,file)),await readFile(join(original,file)),`Changed resource ${name}/${file}`);
   }

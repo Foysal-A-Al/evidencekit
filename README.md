@@ -6,10 +6,10 @@ Use your existing Claude Code or Codex model and project tools. No EvidenceKit P
 
 ## Install the whole library
 
-Publication status: pre-release. The remote command below becomes valid only after the repository is published and its remote installation is verified. Do not present it as a working public install before then.
+Published library. Remote installation and repeat installation were verified in fresh Linux project folders for both Claude Code and Codex; native Windows assistant invocation remains unverified.
 
 ```sh
-npx -y skills@1.7.4 add Foysal-A-Al/evidencekit --skill '*' -g -a claude-code codex --copy -y
+npx -y skills@1.7.4 add Foysal-A-Al/evidencekit --skill "*" -g -a claude-code codex --copy -y
 ```
 
 Requires Node/npm for the standard skills installer and the target coding assistant. The command installs instruction files, not a Python application. Copy mode avoids Windows symlink privileges. It targets Claude Code and Codex only; it does not grant tool permissions or install services.
@@ -73,7 +73,7 @@ Run the real installation smoke test with an existing Node runtime:
 node --test tests/install.test.mjs
 ```
 
-It verifies discovery of four skills, copy installation for both hosts in a temporary project, repeated installation, and preservation of unrelated configuration and skills. Fresh-agent task results and limits are recorded in docs/validation.md. This is not a completed native Windows Claude Code/Codex end-to-end validation.
+It verifies the exact four installed skills, every copied resource byte, both hosts, repeated installation, and preservation of unrelated configuration and skills. Set EVIDENCEKIT_INSTALL_SOURCE=Foysal-A-Al/evidencekit to exercise the GitHub source instead of the local checkout (shell-specific environment syntax). Fresh-agent task results and limits are recorded in docs/validation.md. This is not a completed native Windows Claude Code/Codex end-to-end validation.
 
 Review updates before applying them. Standard installer updates can be requested by skill name. This repository has no custom updater or automatic repair service.
 

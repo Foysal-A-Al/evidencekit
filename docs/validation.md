@@ -17,9 +17,11 @@ PASS: real skills CLI 1.7.4, Node 24.22.1, Linux. Initial install/reinstall test
 
 ## Limits
 
-Cloud Linux testing does not establish working native Windows invocation in either assistant. The user's PC remote-control allowance was exhausted; the replacement library has not been installed or invoked there. Public GitHub install is unverified until publication and a separate remote-source smoke test. No dashboard is delivered by this library; the older Python toolkit is separate and optional.
+Cloud Linux testing does not establish working native Windows invocation in either assistant. The user's PC remote-control allowance was exhausted; the replacement library has not been installed or invoked there. Public GitHub installation and repeat installation passed against Foysal-A-Al/evidencekit (28.67 seconds, one test, zero failures), with exact installed skill set and all skill-resource bytes matching the reviewed local source. This used temporary project scope; the documented global command adds the standard global flag. No dashboard is delivered by this library; the older Python toolkit is separate and optional.
 
 Skill frontmatter validation is structural only. Fresh-agent evaluations cover small synthetic tasks, not arbitrary repositories or comprehensive prompt-injection resistance.
+
+Private vulnerability reporting was enabled in repository settings. Secret scanning and push protection were observed enabled.
 
 ## Independent review
 

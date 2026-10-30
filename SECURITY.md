@@ -6,4 +6,4 @@ The agent uses its existing privileges, so treat skill text and repository conte
 
 No claim of comprehensive secret detection, prompt-injection prevention, software security certification, scientific validation or loaded-process memory attestation is made. Record unsupported checks as BLOCKED.
 
-Do not post private reports or exploit details in public issues. Once publication is complete, enable GitHub private vulnerability reporting and document its actual repository-specific reporting link.
+Do not post private reports or exploit details in public issues. Private vulnerability reporting is enabled. Use the private reporting option in the repository Security section: https://github.com/Foysal-A-Al/evidencekit/security/advisories. Include the affected revision, minimal reproduction and impact; omit credentials and private datasets.
