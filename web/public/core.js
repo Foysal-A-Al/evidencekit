@@ -1,4 +1,4 @@
-import {extractNotebook,experimentSignals} from './notebooks.js?v=0.2.1';
+import {extractNotebook,experimentSignals} from './notebooks.js?v=0.2.2';
 export const LIMITS={files:32,fileBytes:48000,totalBytes:240000,entries:6000,notebookBytes:2000000};
 const banned=/^(\.|node_modules$|vendor$|dist$|build$|coverage$|venv$|__pycache__$)|(?:secret|credential|password|token|private[-_]?key)/i;
 const extensions=new Set(['.md','.txt','.js','.mjs','.cjs','.ts','.tsx','.jsx','.py','.json','.toml','.yaml','.yml','.go','.rs','.java','.css','.html','.sql','.sh','.bat','.ps1','.rb','.php','.vue','.svelte','.cs','.ipynb']);
