@@ -1,0 +1,70 @@
+{
+  "case_id": "case03",
+  "goal": "File configuration looks correct, but requests fail at runtime. Restore successful quote responses without changing the calculation or health behavior.",
+  "provenance": {
+    "kind": "synthetic isolated reproduction; imported observations",
+    "captured_at": "2026-11-03T09:12:49.486Z",
+    "platform": "linux",
+    "node": "v24.22.1",
+    "limits": "You did not collect these observations. This is an evidence-interpretation and proposed-repair test, not an autonomous investigation."
+  },
+  "files": {
+    "package.json": "{\n  \"name\": \"case03\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"start\": \"node runtime.mjs\"\n  }\n}\n",
+    "run.json": "{\n  \"entry\": \"src/app.mjs\",\n  \"cwd\": \".\",\n  \"env\": {\n    \"APP_TIMEOUT_MS\": \"10\"\n  }\n}\n",
+    "src/app.mjs": "import fs from 'node:fs';\nexport const BUILD_ID='quote-v2';\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nconst cfg=JSON.parse(fs.readFileSync(new URL('../config.json',import.meta.url),'utf8'));\nexport async function handle(url){const timeout=Number(process.env.APP_TIMEOUT_MS??cfg.timeout_ms);if(timeout<200)return {status:503,body:{error:'timeout budget below required work',effective_timeout_ms:timeout,required_ms:200}};return {status:200,body:{total:Number(url.searchParams.get('amount')||100)*1.2}};}\n",
+    "config.json": "{\n  \"timeout_ms\": 1000\n}\n"
+  },
+  "observed": {
+    "target_pass": false,
+    "source_control_pass": true,
+    "runtime_control_pass": true,
+    "http_health": {
+      "status": 200,
+      "body": {
+        "app": "quote-v2",
+        "control": "a-b"
+      }
+    },
+    "observations": [
+      {
+        "status": 503,
+        "body": {
+          "error": "timeout budget below required work",
+          "effective_timeout_ms": 10,
+          "required_ms": 200
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "timeout budget below required work",
+          "effective_timeout_ms": 10,
+          "required_ms": 200
+        }
+      }
+    ],
+    "startup_stderr": "",
+    "process_binding": {
+      "port": 34933,
+      "pid": 43,
+      "entry": "src/app.mjs",
+      "build": "quote-v2"
+    }
+  },
+  "allowed_changes": [
+    "package.json",
+    "run.json",
+    "client.json",
+    "dist/app.mjs",
+    "src/client.mjs"
+  ],
+  "allowed_actions": [
+    "rebuild",
+    "restart"
+  ],
+  "constraints": [
+    "Preserve existing source control behavior control(\"A B\")===\"a-b\".",
+    "Do not change runtime.mjs, trusted packaging or verification infrastructure.",
+    "Do not raise resource limits, install packages, use external APIs or invent executed checks."
+  ]
+}

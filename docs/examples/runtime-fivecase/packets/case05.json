@@ -1,0 +1,85 @@
+{
+  "case_id": "case05",
+  "goal": "Four client jobs fail intermittently with 503. Complete all four while preserving the server worker limit of one; implement client backpressure, not a larger server resource limit.",
+  "provenance": {
+    "kind": "synthetic isolated reproduction; imported observations",
+    "captured_at": "2026-11-03T09:12:49.770Z",
+    "platform": "linux",
+    "node": "v24.22.1",
+    "limits": "You did not collect these observations. This is an evidence-interpretation and proposed-repair test, not an autonomous investigation."
+  },
+  "files": {
+    "package.json": "{\n  \"name\": \"case05\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"start\": \"node runtime.mjs\"\n  }\n}\n",
+    "run.json": "{\n  \"entry\": \"src/app.mjs\",\n  \"cwd\": \".\",\n  \"env\": {}\n}\n",
+    "src/app.mjs": "export const BUILD_ID='quote-v2';\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nconst MAX_WORKERS=1;let active=0;\nexport async function handle(url){if(url.pathname!=='/job')return {status:200,body:{total:Number(url.searchParams.get('amount')||100)*1.2}};if(active>=MAX_WORKERS)return {status:503,body:{error:'maximum pending requests exceeded',worker_limit:MAX_WORKERS}};active++;try{await new Promise(r=>setTimeout(r,40));return {status:200,body:{job:url.searchParams.get('id')}};}finally{active--;}}\n",
+    "src/client.mjs": "export async function run(base){\n return Promise.all([1,2,3,4].map(async id=>{const r=await fetch(base+'/job?id='+id);return {id,status:r.status,body:await r.json()};}));\n}\n"
+  },
+  "observed": {
+    "target_pass": false,
+    "source_control_pass": true,
+    "runtime_control_pass": true,
+    "http_health": {
+      "status": 200,
+      "body": {
+        "app": "quote-v2",
+        "control": "a-b"
+      }
+    },
+    "observations": [
+      {
+        "id": 1,
+        "status": 200,
+        "body": {
+          "job": "1"
+        }
+      },
+      {
+        "id": 2,
+        "status": 503,
+        "body": {
+          "error": "maximum pending requests exceeded",
+          "worker_limit": 1
+        }
+      },
+      {
+        "id": 3,
+        "status": 503,
+        "body": {
+          "error": "maximum pending requests exceeded",
+          "worker_limit": 1
+        }
+      },
+      {
+        "id": 4,
+        "status": 503,
+        "body": {
+          "error": "maximum pending requests exceeded",
+          "worker_limit": 1
+        }
+      }
+    ],
+    "startup_stderr": "",
+    "process_binding": {
+      "port": 33405,
+      "pid": 67,
+      "entry": "src/app.mjs",
+      "build": "quote-v2"
+    }
+  },
+  "allowed_changes": [
+    "package.json",
+    "run.json",
+    "client.json",
+    "dist/app.mjs",
+    "src/client.mjs"
+  ],
+  "allowed_actions": [
+    "rebuild",
+    "restart"
+  ],
+  "constraints": [
+    "Preserve existing source control behavior control(\"A B\")===\"a-b\".",
+    "Do not change runtime.mjs, trusted packaging or verification infrastructure.",
+    "Do not raise resource limits, install packages, use external APIs or invent executed checks."
+  ]
+}

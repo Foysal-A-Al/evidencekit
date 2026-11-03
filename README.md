@@ -6,11 +6,11 @@ Use your existing Claude Code or Codex model and project tools. No EvidenceKit P
 
 ## Open the browser workbench
 
-[Open EvidenceKit](https://evidencekit-repo-review.niloyhasanfoysal440.chatgpt.site) (owner-private; ChatGPT sign-in). Paste a public GitHub URL and your goal, preview source scope, run built-in checks, select findings and copy/download a completion prompt. No terminal, local CLI, API key or model installation is needed for this hosted flow.
+[Open EvidenceKit](https://evidencekit-repo-review.niloyhasanfoysal440.chatgpt.site) (owner-private; ChatGPT sign-in). Paste a public GitHub URL and your goal, preview source scope, run built-in checks, select findings, review sensitive data, and copy/download a completion prompt. Rebuild mode generates an independent source-backed brief even when the lexical checks find no warnings. No terminal, local CLI, API key or model installation is needed for this hosted flow.
 
 These are bounded deterministic source checks, not a general AI auditor or live runtime diagnosis. They flag dynamic execution, shell invocation, TLS bypass patterns, debug startup, missing package test scripts and floating Docker bases where inspected. It also reads bounded Jupyter code cells (not outputs) and flags selected experiment/reproducibility patterns. Generic limitations are separate from findings; an empty scan is marked inconclusive and does not manufacture a repair prompt. They can miss bugs and cannot establish all missing features. Goal coverage and runtime are explicitly unverified. An optional audit-request export/result import supports deeper work in your existing agent.
 
-The page fetches public GitHub APIs directly from your browser. Private repositories are unsupported; GitHub rate limits apply. Share a repository selection using `/?repo=owner/repo` on the Site. A custom domain replacement for github.com requires a separately owned domain and hosting.
+The page fetches public GitHub APIs directly from your browser. Direct API inspection supports public repositories; GitHub rate limits apply. For a blocked request, download and extract a repository and explicitly choose its folder: bounded source is read locally, with no upload or API key. You can also paste up to 24,000 characters of redacted runtime evidence under More options. Log classifications remain suspected, not verified execution. Share a repository selection using `/?repo=owner/repo` on the Site. A custom domain replacement for github.com requires a separately owned domain and hosting.
 
 An optional local copy can be launched with Node/npm >=22 (Git may be needed by npm for this source):
 
@@ -96,3 +96,10 @@ Review updates before applying them. Standard installer updates can be requested
 The earlier Python diagnostic toolkit remains a separate optional advanced tool; it is not invoked or installed by these native skill packages.
 
 MIT License. Original EvidenceKit workflows by Abdullah Al Foysal. No GitReverse code or assets are copied into this library.
+
+
+## v0.3.0 — audited repair release
+
+Browser and local-launcher assets share the same source and release version. Snapshot-bound schema-2 imports require matching snapshotId, target, revision and scope. Legacy reports remain visible with BLOCKED findings; export a fresh audit request to migrate. Imported verification claims remain suspected. Clear removes local/runtime inputs, cached source and manual-copy dialog text. Stream errors are bounded and distinguished from visibility. Sensitive-content filtering remains best-effort; explicitly review exports.
+
+The app never automatically runs repository code. Runtime patterns are extracted from text you provide; verified reproduction and repair happen in your authorized coding agent. See docs/examples/runtime-debug-demo for a controlled AI-authored before/after example and docs/audit-repairs-2026-11-03.md for validation and remaining limits. MiroFish's one fictional-persona interview is generated opinion, not customer validation or valuation. No payments or paid model integration was added.

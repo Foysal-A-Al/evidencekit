@@ -1,0 +1,5 @@
+import http from 'node:http';import assert from 'node:assert/strict';
+const app=await import('./'+process.argv[2]);
+const server=http.createServer((req,res)=>{res.setHeader('Content-Type','application/json');try{res.end(JSON.stringify(req.url==='/health'?app.health():app.quote([{price:100,quantity:1}])));}catch(error){console.error(error.stack);res.writeHead(500);res.end(JSON.stringify({error:error.message}));}});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base='http://127.0.0.1:'+server.address().port;
+try{assert.deepEqual(await (await fetch(base+'/health')).json(),{ok:true});console.log('health control PASS');const r=await fetch(base+'/quote');console.log('quote status '+r.status);const value=await r.json();console.log('actual '+JSON.stringify(value));assert.equal(r.status,200);assert.equal(value.total,120);console.log('quote regression PASS');}catch(error){console.error(error.message);process.exitCode=1;}finally{await new Promise(resolve=>server.close(resolve));}
