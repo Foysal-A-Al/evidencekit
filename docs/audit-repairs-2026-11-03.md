@@ -18,7 +18,7 @@ Independent read-only review found delimiter/prefixed-key redaction gaps, delaye
 
 ## Remaining verification limits
 
-Signed-in production browser flows and production response-header enforcement require an authenticated browser session. The available cloud browser reached the private sign-in gate; managed HTTP preview lacks secure Web Crypto needed for collection. Browser layout was inspected, and UI event flows were tested in a DOM simulation; neither substitutes for full authenticated browser QA. Current Windows global skill invocation and exhaustive prompt-injection/security testing remain unverified. No payment integration or paid API was added. Real customer validation requires real developers and remains unproven.
+Signed-in production browser flows require an authenticated browser session. Service-authorized production probes showed that static `_headers` declarations were not enforced. Hosting now serves the exact embedded assets through a small ESM Worker that applies CSP, nosniff, frame, referrer, permissions, cache and transport headers on every route; the fixed serving boundary has a focused regression test. The available cloud browser reached the private sign-in gate; managed HTTP preview lacks secure Web Crypto needed for collection. Browser layout was inspected, and UI event flows were tested in a DOM simulation; neither substitutes for full authenticated browser QA. Current Windows global skill invocation and exhaustive prompt-injection/security testing remain unverified. No payment integration or paid API was added. Real customer validation requires real developers and remains unproven.
 
 ## Budget and safety
 
