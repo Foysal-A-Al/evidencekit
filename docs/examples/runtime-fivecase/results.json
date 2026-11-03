@@ -1,0 +1,1037 @@
+[
+  {
+    "case_id": "case01",
+    "condition": "baseline",
+    "model": "gpt-6.1-sol",
+    "model_ms": 23811,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 25420,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 675,
+      "reasoning_output_tokens": 72
+    },
+    "response": {
+      "case_id": "case01",
+      "root_cause": "The running entry is stale dist/app.mjs (quote-v1, multiplier 1), while the source fix exists only in src/app.mjs (quote-v2, multiplier 1.2).",
+      "findings": [
+        {
+          "claim": "The runtime uses the stale built artifact.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: process_binding identifies entry dist/app.mjs and build quote-v1; health reports app quote-v1.",
+            "Supplied run.json selects dist/app.mjs. That file multiplies by 1; src/app.mjs multiplies by 1.2.",
+            "Imported observations: endpoint totals are 100 and 50, consistent with the stale multiplier."
+          ]
+        },
+        {
+          "claim": "The existing control behavior is healthy and preserved by the proposed replacement.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: source_control_pass and runtime_control_pass are true; health returns status 200 and control a-b.",
+            "Supplied source and distribution files have identical control implementations; the replacement retains that implementation."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "dist/app.mjs",
+          "old": "export const BUILD_ID=\"quote-v1\";\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nexport async function handle(url){return {status:200,body:{total:Number(url.searchParams.get('amount')||100)*1}};}\n",
+          "new": "export const BUILD_ID=\"quote-v2\";\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nexport async function handle(url){return {status:200,body:{total:Number(url.searchParams.get('amount')||100)*1.2}};}\n"
+        }
+      ],
+      "actions": [
+        "restart"
+      ],
+      "acceptance_checks": [
+        "Before replacement, confirm the old string matches exactly once in dist/app.mjs.",
+        "After replacement and trusted restart, amount=100 returns status 200 with total 120; amount=50 returns status 200 with total 60.",
+        "Health returns status 200 with app quote-v2 and control a-b.",
+        "Source and runtime control(\"A B\") remain a-b.",
+        "Keep resource limits, dependencies and trusted infrastructure unchanged."
+      ],
+      "limitations": [
+        "All supplied runtime results are imported observations; no tools or checks were executed.",
+        "The proposed distribution replacement supplies the build output directly, so no rebuild is required. The running process must restart to load it.",
+        "Post-repair acceptance remains unverified."
+      ]
+    },
+    "packet_hash": "ec7ee42866a236bfe197a18aedd5541c6bfd02840718f6156a9b083517222c6c",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 39455,
+        "pid": 75,
+        "entry": "dist/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 99
+  },
+  {
+    "case_id": "case01",
+    "condition": "evidencekit",
+    "model": "gpt-6.1-sol",
+    "model_ms": 20588,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 26865,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 684,
+      "reasoning_output_tokens": 98
+    },
+    "response": {
+      "case_id": "case01",
+      "root_cause": "The running process uses stale dist/app.mjs (quote-v1, multiplier 1), while the corrected src/app.mjs contains quote-v2 and multiplier 1.2. Rebuild the distribution and restart the process.",
+      "findings": [
+        {
+          "claim": "F1: VERIFIED FAIL — the running artifact returns untaxed totals.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations captured at 2026-11-03T09:12:49.221Z bind port 40695 and PID 19 to dist/app.mjs, build quote-v1.",
+            "Imported HTTP observations report totals 100 and 50; the goal requires 120 and 60.",
+            "Supplied dist/app.mjs declares quote-v1 and multiplies the amount by 1; supplied src/app.mjs declares quote-v2 and multiplies by 1.2."
+          ]
+        },
+        {
+          "claim": "F2: The supplied build operation can propagate the existing source fix without file edits.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported run.json selects dist/app.mjs.",
+            "Imported build.mjs copies src/app.mjs to dist/app.mjs.",
+            "Both supplied application files retain the identical control function."
+          ]
+        },
+        {
+          "claim": "F3: VERIFIED PASS — captured health and control behavior are healthy.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported health response is HTTP 200 with app quote-v1 and control a-b.",
+            "Imported source_control_pass and runtime_control_pass are both true."
+          ]
+        }
+      ],
+      "changes": [],
+      "actions": [
+        "rebuild",
+        "restart"
+      ],
+      "acceptance_checks": [
+        "Use trusted fixture rebuild infrastructure to regenerate dist/app.mjs from src/app.mjs, then restart through trusted fixture infrastructure.",
+        "Confirm regenerated dist/app.mjs matches src/app.mjs and declares quote-v2.",
+        "Confirm the restarted target is bound to dist/app.mjs and health returns HTTP 200 with app quote-v2 and control a-b.",
+        "Confirm the quote endpoint returns HTTP 200 with total 120 for amount=100 and total 60 for amount=50.",
+        "Confirm source and runtime control(\"A B\") both remain a-b; preserve existing resource limits, data and infrastructure."
+      ],
+      "limitations": [
+        "All observations are imported from the synthetic isolated packet; no tools or checks were executed.",
+        "No file replacements are necessary because the supplied source already contains the fix. Rebuild and restart outcomes remain unverified."
+      ]
+    },
+    "packet_hash": "ec7ee42866a236bfe197a18aedd5541c6bfd02840718f6156a9b083517222c6c",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 39837,
+        "pid": 91,
+        "entry": "dist/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 134
+  },
+  {
+    "case_id": "case02",
+    "condition": "baseline",
+    "model": "gpt-6.1-sol",
+    "model_ms": 17109,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 25562,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 518,
+      "reasoning_output_tokens": 0
+    },
+    "response": {
+      "case_id": "case02",
+      "root_cause": "The client base_url points to inventory-v0 on port 41459 instead of the intended quote-v2 service on port 37181.",
+      "findings": [
+        {
+          "claim": "The client reaches the wrong healthy application.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: client.json targets http://127.0.0.1:41459; client_target identifies inventory-v0, pid 35, entry other/app.mjs.",
+            "Imported observations: intended_service identifies quote-v2 at http://127.0.0.1:37181; process_binding confirms port 37181, pid 27, entry src/app.mjs.",
+            "Imported source: inventory multiplies amounts by 9.99, consistent with observed totals 999 and 499.5; quote multiplies by 1.2."
+          ]
+        },
+        {
+          "claim": "The supplied evidence indicates healthy quote service and passing controls.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: http_health returns status 200 with app quote-v2 and control a-b; startup_stderr is empty.",
+            "Imported observations: source_control_pass and runtime_control_pass are true."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "client.json",
+          "old": "\"base_url\": \"http://127.0.0.1:41459\"",
+          "new": "\"base_url\": \"http://127.0.0.1:37181\""
+        }
+      ],
+      "actions": [],
+      "acceptance_checks": [
+        "Through trusted fixture verification, confirm the client uses port 37181 and reaches quote-v2.",
+        "Confirm client requests with amount=100 and amount=50 return status 200 and totals 120 and 60 respectively.",
+        "Confirm both services remain running with their existing identities and bindings.",
+        "Confirm source and runtime controls still pass, including control(\"A B\")===\"a-b\"."
+      ],
+      "limitations": [
+        "All evidence is imported; no tools or checks were personally executed, and the proposed replacement has not been applied.",
+        "No rebuild or service restart is indicated. The packet does not establish whether a persistent client caches configuration; if so, restart only that client through trusted infrastructure."
+      ]
+    },
+    "packet_hash": "b3c0e9e3bd51a3a452917cf4066012a7f8d540e2e5cc4c96d339fc14cddc83eb",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 35551,
+        "pid": 99,
+        "entry": "src/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 72
+  },
+  {
+    "case_id": "case02",
+    "condition": "evidencekit",
+    "model": "gpt-6.1-sol",
+    "model_ms": 20795,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 27007,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 632,
+      "reasoning_output_tokens": 0
+    },
+    "response": {
+      "case_id": "case02",
+      "root_cause": "client.json routes the client to port 41459, identified as inventory-v0, instead of the intended quote-v2 service on port 37181.",
+      "findings": [
+        {
+          "claim": "F1 VERIFIED FAIL: The client targets the wrong healthy application.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations captured 2026-11-03T09:12:49.395Z: client.json base_url is http://127.0.0.1:41459; client_target identity identifies inventory-v0, PID 35, entry other/app.mjs.",
+            "Imported observations: intended_service identifies quote-v2 at http://127.0.0.1:37181; process_binding associates port 37181 with PID 27 and src/app.mjs.",
+            "Imported responses total 999 and 499.5 agree with the inventory multiplier 9.99 for amounts 100 and 50; the quote source uses 1.2."
+          ]
+        },
+        {
+          "claim": "F2 VERIFIED PASS: Supplied health and control checks support preserving both services and existing application code.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: source_control_pass and runtime_control_pass are true; http_health returns status 200 with app quote-v2 and control a-b.",
+            "Supplied source: both applications implement control(\"A B\")===\"a-b\"; startup_stderr is empty."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "client.json",
+          "old": "\"base_url\": \"http://127.0.0.1:41459\"",
+          "new": "\"base_url\": \"http://127.0.0.1:37181\""
+        }
+      ],
+      "actions": [],
+      "acceptance_checks": [
+        "Apply the proposed replacement only if its old string occurs exactly once in client.json.",
+        "Verify the effective client base URL is http://127.0.0.1:37181 and its identity identifies quote-v2 with entry src/app.mjs.",
+        "Through the client, verify amounts 100 and 50 return status 200 with totals 120 and 60.",
+        "Verify quote-v2 health remains successful and source/runtime control(\"A B\")===\"a-b\" still passes.",
+        "Verify inventory-v0 remains healthy on port 41459 and both existing services remain running."
+      ],
+      "limitations": [
+        "All observations are imported from a synthetic isolated reproduction; no tools, edits or checks were executed.",
+        "The packet does not establish how the client reloads configuration. No rebuild or service restart is supported as necessary by the supplied evidence; ensure acceptance checks use the updated client configuration.",
+        "The health observation alone does not establish client routing; the supplied endpoint identities establish the mismatch."
+      ]
+    },
+    "packet_hash": "b3c0e9e3bd51a3a452917cf4066012a7f8d540e2e5cc4c96d339fc14cddc83eb",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 34887,
+        "pid": 107,
+        "entry": "src/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 74
+  },
+  {
+    "case_id": "case03",
+    "condition": "baseline",
+    "model": "gpt-6.1-sol",
+    "model_ms": 14947,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 25461,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 490,
+      "reasoning_output_tokens": 0
+    },
+    "response": {
+      "case_id": "case03",
+      "root_cause": "run.json sets APP_TIMEOUT_MS to 10, overriding config.json's 1000 ms through the handler's environment-first lookup. The effective 10 ms budget is below the required 200 ms, causing quote requests to return 503.",
+      "findings": [
+        {
+          "claim": "The environment override causes the quote failures.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported packet: run.json contains \"APP_TIMEOUT_MS\": \"10\".",
+            "Imported source: Number(process.env.APP_TIMEOUT_MS??cfg.timeout_ms) selects the environment value before the configured 1000 ms.",
+            "Imported observations: both quote responses return 503 with effective_timeout_ms 10 and required_ms 200."
+          ]
+        },
+        {
+          "claim": "The supplied controls and application identity are healthy.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: source_control_pass and runtime_control_pass are true.",
+            "Imported health response: status 200, app quote-v2, control a-b.",
+            "Imported process binding: entry src/app.mjs and build quote-v2; startup_stderr is empty."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "run.json",
+          "old": "\"APP_TIMEOUT_MS\": \"10\"",
+          "new": "\"APP_TIMEOUT_MS\": \"1000\""
+        }
+      ],
+      "actions": [
+        "restart"
+      ],
+      "acceptance_checks": [
+        "Trusted verification confirms the replacement matches exactly once in run.json.",
+        "After restart, quote requests return 200 with total equal to amount * 1.2; an omitted amount returns total 120.",
+        "Health remains 200 with app quote-v2 and control a-b.",
+        "Source and runtime controls remain passing, including control(\"A B\")===\"a-b\".",
+        "Preserve resource limits and existing dependencies."
+      ],
+      "limitations": [
+        "All supplied observations are imported; no tools or checks were personally executed.",
+        "Repair and acceptance remain unexecuted proposals. Restart must apply run.json's updated environment through trusted infrastructure.",
+        "No rebuild is indicated by this configuration-only change."
+      ]
+    },
+    "packet_hash": "c1e0bef95251763a54ff9b26336cc0a2cc0d5cc08b738f6bf65fedd98b7dd0aa",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 44397,
+        "pid": 115,
+        "entry": "src/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 82
+  },
+  {
+    "case_id": "case03",
+    "condition": "evidencekit",
+    "model": "gpt-6.1-sol",
+    "model_ms": 20247,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 26906,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 636,
+      "reasoning_output_tokens": 63
+    },
+    "response": {
+      "case_id": "case03",
+      "root_cause": "The runtime environment overrides config.json: APP_TIMEOUT_MS=10 takes precedence over timeout_ms=1000, triggering the handler's timeout<200 rejection.",
+      "findings": [
+        {
+          "claim": "F1: VERIFIED FAIL — the environment override causes quote requests to return 503.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported source: src/app.mjs selects Number(process.env.APP_TIMEOUT_MS??cfg.timeout_ms) and rejects values below 200.",
+            "Imported configuration: run.json sets APP_TIMEOUT_MS to \"10\"; config.json sets timeout_ms to 1000.",
+            "Imported observations: both quote responses return 503 with effective_timeout_ms=10 and required_ms=200."
+          ]
+        },
+        {
+          "claim": "F2: VERIFIED PASS — supplied identity, health and control observations are healthy.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported process binding: port 34933, PID 43, entry src/app.mjs, build quote-v2.",
+            "Imported health response: HTTP 200, app=quote-v2, control=a-b.",
+            "Imported source_control_pass and runtime_control_pass are true."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "run.json",
+          "old": "  \"env\": {\n    \"APP_TIMEOUT_MS\": \"10\"\n  }",
+          "new": "  \"env\": {}"
+        }
+      ],
+      "actions": [
+        "restart"
+      ],
+      "acceptance_checks": [
+        "Before replacement, confirm the old string occurs exactly once in run.json.",
+        "Use trusted fixture infrastructure to restart with the revised run.json; confirm APP_TIMEOUT_MS is absent from the effective process environment and config.json supplies 1000.",
+        "Against the restarted target, confirm complete quote responses return HTTP 200: amount=100 yields total=120 and omitted amount yields total=120.",
+        "Confirm health remains HTTP 200 with app=quote-v2 and control=a-b; source and runtime control checks remain passing.",
+        "Preserve calculation code, resource limits, packages, data and trusted infrastructure."
+      ],
+      "limitations": [
+        "All supplied evidence is imported from the synthetic capture at 2026-11-03T09:12:49.486Z; no tools, edits or checks were executed.",
+        "runtime.mjs was not supplied. Removal of the override must be confirmed after restart; an inherited APP_TIMEOUT_MS could otherwise remain effective.",
+        "The proposed repair and post-restart behavior remain unverified."
+      ]
+    },
+    "packet_hash": "c1e0bef95251763a54ff9b26336cc0a2cc0d5cc08b738f6bf65fedd98b7dd0aa",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 38123,
+        "pid": 123,
+        "entry": "src/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 77
+  },
+  {
+    "case_id": "case04",
+    "condition": "baseline",
+    "model": "gpt-6.1-sol",
+    "model_ms": 16886,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 25847,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 594,
+      "reasoning_output_tokens": 0
+    },
+    "response": {
+      "case_id": "case04",
+      "root_cause": "fixture-price is declared only in devDependencies, while build.mjs copies only dependencies into artifact/node_modules. The production app imports fixture-price, so the artifact cannot start.",
+      "findings": [
+        {
+          "claim": "Imported observations show startup fails because fixture-price cannot be resolved from artifact/app.mjs.",
+          "status": "VERIFIED",
+          "evidence": [
+            "startup_stderr reports ERR_MODULE_NOT_FOUND: Cannot find package 'fixture-price' imported from artifact/app.mjs.",
+            "Imported http_health.status and process_binding are null; target_pass and runtime_control_pass are false."
+          ]
+        },
+        {
+          "claim": "The supplied manifest and build logic explain the missing production dependency.",
+          "status": "VERIFIED",
+          "evidence": [
+            "package.json has empty dependencies and fixture-price version 1.0.0 under devDependencies.",
+            "build.mjs copies vendor packages only for names in manifest.dependencies.",
+            "development/src/app.mjs imports taxed from fixture-price."
+          ]
+        },
+        {
+          "claim": "The repair preserves the existing dependency implementation and source control behavior.",
+          "status": "VERIFIED",
+          "evidence": [
+            "The proposed change moves the existing version into dependencies without modifying source or vendor files.",
+            "Imported source_control_pass is true; supplied control implementation lowercases and replaces spaces with hyphens."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "package.json",
+          "old": "  \"dependencies\": {},\n  \"devDependencies\": {\n    \"fixture-price\": \"1.0.0\"\n  }",
+          "new": "  \"dependencies\": {\n    \"fixture-price\": \"1.0.0\"\n  },\n  \"devDependencies\": {}"
+        }
+      ],
+      "actions": [
+        "rebuild",
+        "restart"
+      ],
+      "acceptance_checks": [
+        "Trusted rebuild includes the existing vendor/fixture-price package in artifact/node_modules/fixture-price.",
+        "Trusted restart loads artifact/app.mjs without ERR_MODULE_NOT_FOUND and establishes the expected process binding.",
+        "Trusted HTTP verification returns status 200 and total 120 for amount=100.",
+        "Source and runtime controls confirm control(\"A B\")===\"a-b\"; target verification passes.",
+        "Keep existing resource limits and trusted infrastructure unchanged; perform no package installation."
+      ],
+      "limitations": [
+        "All supplied execution results are imported observations; no tools or checks were executed here.",
+        "The replacement is proposed, not applied. Post-repair behavior requires trusted rebuild, restart and verification.",
+        "The supplied old string occurs exactly once in the captured package.json."
+      ]
+    },
+    "packet_hash": "8a253dfbcbdad4ad72b3e420397c3bc4d95018bec69cbfc4ccfce986f3e28f91",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 33109,
+        "pid": 139,
+        "entry": "artifact/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 141
+  },
+  {
+    "case_id": "case04",
+    "condition": "evidencekit",
+    "model": "gpt-6.1-sol",
+    "model_ms": 21589,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 27292,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 671,
+      "reasoning_output_tokens": 0
+    },
+    "response": {
+      "case_id": "case04",
+      "root_cause": "fixture-price is declared only in devDependencies, while build.mjs copies only dependencies into artifact/node_modules. The production app imports fixture-price, so its omission causes startup ERR_MODULE_NOT_FOUND.",
+      "findings": [
+        {
+          "claim": "F1 — VERIFIED FAIL: the production artifact cannot resolve its runtime dependency.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observation: startup_stderr reports ERR_MODULE_NOT_FOUND for fixture-price imported from artifact/app.mjs.",
+            "Supplied files: development/src/app.mjs imports fixture-price; package.json has empty dependencies and fixture-price@1.0.0 under devDependencies.",
+            "Supplied build.mjs copies vendor packages only for names in manifest.dependencies."
+          ]
+        },
+        {
+          "claim": "F2 — VERIFIED PASS: the captured development source control check passed.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observation: source_control_pass is true.",
+            "Supplied source implements control by lowercasing and replacing spaces with hyphens, consistent with control(\"A B\")===\"a-b\"."
+          ]
+        },
+        {
+          "claim": "F3 — live runtime behavior remains unverified after repair.",
+          "status": "BLOCKED",
+          "evidence": [
+            "Imported observations: runtime_control_pass is false, HTTP health status is null, and process_binding is null.",
+            "No repaired artifact or post-repair observations were supplied; no checks were personally executed."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "package.json",
+          "old": "  \"dependencies\": {},\n  \"devDependencies\": {\n    \"fixture-price\": \"1.0.0\"\n  }",
+          "new": "  \"dependencies\": {\n    \"fixture-price\": \"1.0.0\"\n  },\n  \"devDependencies\": {}"
+        }
+      ],
+      "actions": [
+        "rebuild",
+        "restart"
+      ],
+      "acceptance_checks": [
+        "Apply the package.json replacement only if its old string matches exactly once.",
+        "Use trusted fixture infrastructure to rebuild, then confirm artifact/node_modules/fixture-price contains the unchanged vendor implementation and package metadata.",
+        "Restart through trusted fixture infrastructure; confirm startup succeeds without ERR_MODULE_NOT_FOUND and the configured runtime loads artifact/app.mjs.",
+        "Confirm the actual runtime returns status 200 and total 120 for amount=100.",
+        "Confirm source and runtime control(\"A B\")===\"a-b\" and BUILD_ID remains quote-v2.",
+        "Preserve runtime.mjs, trusted infrastructure, vendor implementation, resource limits and existing data; install no packages."
+      ],
+      "limitations": [
+        "All observations are imported from the synthetic isolated packet captured at 2026-11-03T09:12:49.652Z.",
+        "The replacement and trusted actions are proposed, not applied or executed.",
+        "runtime.mjs and a bound live endpoint were not supplied, limiting independent runtime attribution and health verification."
+      ]
+    },
+    "packet_hash": "8a253dfbcbdad4ad72b3e420397c3bc4d95018bec69cbfc4ccfce986f3e28f91",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "status": 200,
+          "body": {
+            "total": 120
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "total": 60
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 42317,
+        "pid": 155,
+        "entry": "artifact/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 150
+  },
+  {
+    "case_id": "case05",
+    "condition": "baseline",
+    "model": "gpt-6.1-sol",
+    "model_ms": 17749,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 25580,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 566,
+      "reasoning_output_tokens": 0
+    },
+    "response": {
+      "case_id": "case05",
+      "root_cause": "The client launches all four jobs concurrently through Promise.all, exceeding the server's single-worker capacity. The server rejects overlapping jobs with 503; the client provides no backpressure.",
+      "findings": [
+        {
+          "claim": "Concurrent client requests exceed the preserved worker limit of one.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Supplied src/client.mjs starts all four fetches inside Promise.all.",
+            "Supplied src/app.mjs sets MAX_WORKERS=1 and returns 503 when active>=MAX_WORKERS while each accepted job awaits 40 ms.",
+            "Imported observations: job 1 returned 200; jobs 2–4 returned 503 with worker_limit:1."
+          ]
+        },
+        {
+          "claim": "The supplied controls are healthy and require no server changes.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: source_control_pass and runtime_control_pass are true.",
+            "Imported HTTP health observation: status 200, app quote-v2, control a-b.",
+            "Imported process binding identifies src/app.mjs and build quote-v2; startup_stderr is empty."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "src/client.mjs",
+          "old": " return Promise.all([1,2,3,4].map(async id=>{const r=await fetch(base+'/job?id='+id);return {id,status:r.status,body:await r.json()};}));",
+          "new": " const results=[];\n for(const id of [1,2,3,4]){const r=await fetch(base+'/job?id='+id);results.push({id,status:r.status,body:await r.json()});}\n return results;"
+        }
+      ],
+      "actions": [],
+      "acceptance_checks": [
+        "Using trusted fixture infrastructure, run the updated client and confirm four ordered results with IDs 1–4, each status 200 and body.job matching its ID.",
+        "Confirm the client has at most one job request in flight per run.",
+        "Confirm MAX_WORKERS remains 1, control(\"A B\")===\"a-b\", and the existing source, runtime and HTTP health controls still pass."
+      ],
+      "limitations": [
+        "All reported observations are imported; no tools or checks were executed.",
+        "Serialization applies within each run invocation; simultaneous independent clients or run invocations are outside the demonstrated repair scope.",
+        "The packet supplies no client build or reload requirement, so no rebuild or restart is prescribed."
+      ]
+    },
+    "packet_hash": "f3c2c6400c51bd983c1e03585175322d44e8ef655f894a68a0ef085a3f16404c",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "id": 1,
+          "status": 200,
+          "body": {
+            "job": "1"
+          }
+        },
+        {
+          "id": 2,
+          "status": 200,
+          "body": {
+            "job": "2"
+          }
+        },
+        {
+          "id": 3,
+          "status": 200,
+          "body": {
+            "job": "3"
+          }
+        },
+        {
+          "id": 4,
+          "status": 200,
+          "body": {
+            "job": "4"
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 38635,
+        "pid": 163,
+        "entry": "src/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 235
+  },
+  {
+    "case_id": "case05",
+    "condition": "evidencekit",
+    "model": "gpt-6.1-sol",
+    "model_ms": 25355,
+    "exit_code": 0,
+    "timed_out": false,
+    "tool_event_count": 0,
+    "usage": {
+      "input_tokens": 27025,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 679,
+      "reasoning_output_tokens": 45
+    },
+    "response": {
+      "case_id": "case05",
+      "root_cause": "The client starts four requests concurrently through Promise.all, but the server admits only one active job and immediately rejects overlapping requests with 503. Client-side serialization supplies the required backpressure.",
+      "findings": [
+        {
+          "claim": "F1 VERIFIED FAIL: Concurrent client submission exceeds the server's one-worker limit.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported source: src/client.mjs maps all four IDs into concurrent fetch calls inside Promise.all.",
+            "Imported source: src/app.mjs sets MAX_WORKERS=1 and returns 503 when active>=MAX_WORKERS.",
+            "Imported observations captured at 2026-11-03T09:12:49.770Z: job 1 returned 200; jobs 2–4 returned 503 with worker_limit=1."
+          ]
+        },
+        {
+          "claim": "F2 VERIFIED PASS: The supplied controls are healthy and require no server change.",
+          "status": "VERIFIED",
+          "evidence": [
+            "Imported observations: source_control_pass=true and runtime_control_pass=true.",
+            "Imported health response: status 200, app quote-v2, control a-b.",
+            "Imported process binding: port 33405, PID 67, entry src/app.mjs, build quote-v2."
+          ]
+        }
+      ],
+      "changes": [
+        {
+          "path": "src/client.mjs",
+          "old": " return Promise.all([1,2,3,4].map(async id=>{const r=await fetch(base+'/job?id='+id);return {id,status:r.status,body:await r.json()};}));",
+          "new": " const results=[];\n for(const id of [1,2,3,4]){const r=await fetch(base+'/job?id='+id);results.push({id,status:r.status,body:await r.json()});}\n return results;"
+        }
+      ],
+      "actions": [],
+      "acceptance_checks": [
+        "Apply the replacement only if its old string occurs exactly once.",
+        "Using trusted fixture infrastructure, execute the updated client against the target and require four results in ID order 1–4, each status 200 with body.job matching its ID.",
+        "Verify the client has at most one outstanding job request throughout a run, including response-body consumption.",
+        "Confirm MAX_WORKERS remains 1, control(\"A B\")===\"a-b\", and the existing runtime health/control checks still pass."
+      ],
+      "limitations": [
+        "All observations are imported from a synthetic isolated reproduction; no tools or checks were personally executed and no repair was applied.",
+        "Serialization limits concurrency within each run invocation. Coordination across simultaneous invocations or unrelated clients is outside the supplied evidence and repair scope.",
+        "The packet does not establish that a rebuild or restart is needed for this client source change; neither is requested."
+      ]
+    },
+    "packet_hash": "f3c2c6400c51bd983c1e03585175322d44e8ef655f894a68a0ef085a3f16404c",
+    "applied": {
+      "ok": true
+    },
+    "verified": {
+      "target_pass": true,
+      "source_control_pass": true,
+      "runtime_control_pass": true,
+      "http_health": {
+        "status": 200,
+        "body": {
+          "app": "quote-v2",
+          "control": "a-b"
+        }
+      },
+      "observations": [
+        {
+          "id": 1,
+          "status": 200,
+          "body": {
+            "job": "1"
+          }
+        },
+        {
+          "id": 2,
+          "status": 200,
+          "body": {
+            "job": "2"
+          }
+        },
+        {
+          "id": 3,
+          "status": 200,
+          "body": {
+            "job": "3"
+          }
+        },
+        {
+          "id": 4,
+          "status": 200,
+          "body": {
+            "job": "4"
+          }
+        }
+      ],
+      "startup_stderr": "",
+      "process_binding": {
+        "port": 35697,
+        "pid": 171,
+        "entry": "src/app.mjs",
+        "build": "quote-v2"
+      }
+    },
+    "verification_ms": 249
+  }
+]

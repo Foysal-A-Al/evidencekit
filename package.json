@@ -1,6 +1,6 @@
 {
   "name": "evidencekit-workbench",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Local repository evidence workbench and native coding-agent skills",
   "license": "MIT",
   "type": "module",

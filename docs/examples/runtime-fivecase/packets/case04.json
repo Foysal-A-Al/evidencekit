@@ -1,0 +1,46 @@
+{
+  "case_id": "case04",
+  "goal": "Development source checks pass but the production artifact fails to start. Ship the existing fixture-price runtime dependency in production without replacing its implementation.",
+  "provenance": {
+    "kind": "synthetic isolated reproduction; imported observations",
+    "captured_at": "2026-11-03T09:12:49.652Z",
+    "platform": "linux",
+    "node": "v24.22.1",
+    "limits": "You did not collect these observations. This is an evidence-interpretation and proposed-repair test, not an autonomous investigation."
+  },
+  "files": {
+    "package.json": "{\n  \"name\": \"case04\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"build\": \"node build.mjs\",\n    \"start\": \"node runtime.mjs\"\n  },\n  \"dependencies\": {},\n  \"devDependencies\": {\n    \"fixture-price\": \"1.0.0\"\n  }\n}\n",
+    "run.json": "{\n  \"entry\": \"artifact/app.mjs\",\n  \"cwd\": \".\",\n  \"env\": {}\n}\n",
+    "development/src/app.mjs": "import {taxed} from 'fixture-price';\nexport const BUILD_ID='quote-v2';\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nexport async function handle(url){return {status:200,body:{total:taxed(Number(url.searchParams.get('amount')||100))}};}\n",
+    "build.mjs": "import fs from 'node:fs';\nimport path from 'node:path';\nimport {fileURLToPath} from 'node:url';\nconst root=path.dirname(fileURLToPath(import.meta.url));\nconst manifest=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));\nfs.rmSync(path.join(root,'artifact'),{recursive:true,force:true});\nfs.mkdirSync(path.join(root,'artifact/node_modules'),{recursive:true});\nfs.copyFileSync(path.join(root,'development/src/app.mjs'),path.join(root,'artifact/app.mjs'));\nfor(const name of Object.keys(manifest.dependencies||{})){\n if(name!=='fixture-price')throw Error('Only the fixture-owned dependency is allowed');\n fs.cpSync(path.join(root,'vendor',name),path.join(root,'artifact/node_modules',name),{recursive:true});\n}\n",
+    "vendor/fixture-price/package.json": "{\n  \"name\": \"fixture-price\",\n  \"version\": \"1.0.0\",\n  \"type\": \"module\",\n  \"exports\": \"./index.mjs\"\n}\n",
+    "vendor/fixture-price/index.mjs": "export function taxed(amount){return amount*1.2;}\n"
+  },
+  "observed": {
+    "target_pass": false,
+    "source_control_pass": true,
+    "runtime_control_pass": false,
+    "http_health": {
+      "status": null
+    },
+    "observations": [],
+    "startup_stderr": "node:internal/modules/package_json_reader:331\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\n        ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package 'fixture-price' imported from /workspace/scratch/baec519dc850/evidencekit-comparison-20261103/run/projects/case04/artifact/app.mjs\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)\n    at packageResolve (node:internal/modules/esm/resolve:784:25)\n    at moduleResolve (node:internal/modules/esm/resolve:873:18)\n    at defaultResolve (node:internal/modules/esm/resolve:1006:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)\n    at #resolve (node:internal/modules/esm/loader:687:17)\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v24.22.1\n",
+    "process_binding": null
+  },
+  "allowed_changes": [
+    "package.json",
+    "run.json",
+    "client.json",
+    "dist/app.mjs",
+    "src/client.mjs"
+  ],
+  "allowed_actions": [
+    "rebuild",
+    "restart"
+  ],
+  "constraints": [
+    "Preserve existing source control behavior control(\"A B\")===\"a-b\".",
+    "Do not change runtime.mjs, trusted packaging or verification infrastructure.",
+    "Do not raise resource limits, install packages, use external APIs or invent executed checks."
+  ]
+}

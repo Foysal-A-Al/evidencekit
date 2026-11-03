@@ -1,0 +1,89 @@
+{
+  "case_id": "case02",
+  "goal": "The client reaches a healthy service but returns the wrong application response. Route the client to the intended quote app; preserve both running services.",
+  "provenance": {
+    "kind": "synthetic isolated reproduction; imported observations",
+    "captured_at": "2026-11-03T09:12:49.395Z",
+    "platform": "linux",
+    "node": "v24.22.1",
+    "limits": "You did not collect these observations. This is an evidence-interpretation and proposed-repair test, not an autonomous investigation."
+  },
+  "files": {
+    "package.json": "{\n  \"name\": \"case02\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"start\": \"node runtime.mjs\"\n  }\n}\n",
+    "run.json": "{\n  \"entry\": \"src/app.mjs\",\n  \"cwd\": \".\",\n  \"env\": {}\n}\n",
+    "src/app.mjs": "export const BUILD_ID=\"quote-v2\";\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nexport async function handle(url){return {status:200,body:{total:Number(url.searchParams.get('amount')||100)*1.2}};}\n",
+    "client.json": "{\n  \"base_url\": \"http://127.0.0.1:41459\"\n}\n",
+    "other/app.mjs": "export const BUILD_ID=\"inventory-v0\";\nexport function control(s){return s.toLowerCase().replaceAll(' ','-');}\nexport async function handle(url){return {status:200,body:{total:Number(url.searchParams.get('amount')||100)*9.99}};}\n"
+  },
+  "observed": {
+    "target_pass": false,
+    "source_control_pass": true,
+    "runtime_control_pass": true,
+    "http_health": {
+      "status": 200,
+      "body": {
+        "app": "quote-v2",
+        "control": "a-b"
+      }
+    },
+    "observations": [
+      {
+        "status": 200,
+        "body": {
+          "total": 999
+        }
+      },
+      {
+        "status": 200,
+        "body": {
+          "total": 499.5
+        }
+      }
+    ],
+    "startup_stderr": "",
+    "process_binding": {
+      "port": 37181,
+      "pid": 27,
+      "entry": "src/app.mjs",
+      "build": "quote-v2"
+    }
+  },
+  "intended_service": {
+    "url": "http://127.0.0.1:37181",
+    "identity": {
+      "status": 200,
+      "body": {
+        "app": "quote-v2",
+        "pid": 27,
+        "entry": "src/app.mjs"
+      }
+    }
+  },
+  "client_target": {
+    "url": "http://127.0.0.1:41459",
+    "identity": {
+      "status": 200,
+      "body": {
+        "app": "inventory-v0",
+        "pid": 35,
+        "entry": "other/app.mjs"
+      }
+    }
+  },
+  "allowed_changes": [
+    "package.json",
+    "run.json",
+    "client.json",
+    "dist/app.mjs",
+    "src/client.mjs"
+  ],
+  "allowed_actions": [
+    "rebuild",
+    "restart"
+  ],
+  "constraints": [
+    "Preserve existing source control behavior control(\"A B\")===\"a-b\".",
+    "Do not change runtime.mjs, trusted packaging or verification infrastructure.",
+    "Do not raise resource limits, install packages, use external APIs or invent executed checks."
+  ]
+}

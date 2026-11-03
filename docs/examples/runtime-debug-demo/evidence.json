@@ -1,0 +1,24 @@
+{
+  "kind": "controlled AI-authored demo; deliberately seeded defect, not a customer case",
+  "input": {
+    "price": 100,
+    "quantity": 1
+  },
+  "expected": {
+    "total": 120
+  },
+  "checks": [
+    {
+      "file": "broken-app.mjs",
+      "exit_code": 1,
+      "stdout": "health control PASS\nquote status 500\nactual {\"error\":\"Cannot read properties of undefined (reading 'amount')\"}\n",
+      "stderr": "TypeError: Cannot read properties of undefined (reading 'amount')\n    at file://<demo>/broken-app.mjs:3:88\n    at Array.reduce (<anonymous>)\n    at Module.quote (file://<demo>/broken-app.mjs:3:50)\n    at Server.<anonymous> (file://<demo>/check.mjs:3:157)\n    at Server.emit (node:events:514:28)\n    at parserOnIncoming (node:_http_server:1293:12)\n    at HTTPParser.parserOnHeadersComplete (node:_http_common:125:17)\nExpected values to be strictly equal:\n\n500 !== 200\n\n"
+    },
+    {
+      "file": "fixed-app.mjs",
+      "exit_code": 0,
+      "stdout": "health control PASS\nquote status 200\nactual {\"total\":120}\nquote regression PASS\n",
+      "stderr": ""
+    }
+  ]
+}
